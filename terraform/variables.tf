@@ -33,3 +33,7 @@ variable "cidr_blocks_allowed" {
   type        = "list"
   description = "The list of CIDR blocks that will be allowed in SG (and other places)"
 }
+
+variable "hosted_zone" {
+  description = "Hosted Zone name"
+}

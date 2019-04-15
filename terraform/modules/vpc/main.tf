@@ -103,15 +103,14 @@ resource "aws_security_group" "vpc_sg" {
   tags {
     Name = "${var.environment}-sg"
   }
-
 }
 
 resource "aws_security_group_rule" "ingress_self" {
-  type        = "ingress"
-  from_port   = 0
-  to_port     = 0
-  protocol    = "-1"
-  self = true
+  type      = "ingress"
+  from_port = 0
+  to_port   = 0
+  protocol  = "-1"
+  self      = true
 
   security_group_id = "${aws_security_group.vpc_sg.id}"
 }
