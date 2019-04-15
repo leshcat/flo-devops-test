@@ -3,14 +3,10 @@ variable "public_subnet_ids" {
   description = "Hosted Zone name"
 }
 
-variable "vpc_id" {
-  description = "VPC id for hosted zone association"
-}
-
 variable "vpc_sg_id" {
   description = "Pre-defined VPC Security Group id"
 }
 
-variable "efs_id" {
-  description = "EFS id"
+variable "subnets_count" {
+  description = "Subnets count for EFS mounts"
 }

@@ -1,3 +1,5 @@
+data "aws_availability_zones" "available" {}
+
 resource "aws_vpc" "environment" {
   cidr_block           = "${var.vpc_cidr}"
   enable_dns_hostnames = "${var.enable_dns_hostnames}"
@@ -50,6 +52,7 @@ resource "aws_subnet" "public" {
   vpc_id                  = "${aws_vpc.environment.id}"
   cidr_block              = "${var.public_subnets[count.index]}"
   map_public_ip_on_launch = "${var.map_public_ip_on_launch}"
+  availability_zone = "${data.aws_availability_zones.available.names[count.index]}"
 
   tags {
     Name = "${var.environment}-public-${count.index}"

@@ -1,4 +1,4 @@
-data "aws_ami" "amazon-linux-2" {
+data "aws_ami" "amazon_linux_2" {
  most_recent = true
  owners = ["amazon"]
 
@@ -7,10 +7,13 @@ data "aws_ami" "amazon-linux-2" {
    values = ["amazon"]
  }
 
-
  filter {
-   name   = "name"
-   values = ["amzn2-ami-hvm*"]
+   name = "name"
+   values = ["amzn2-ami-*-x86_64-gp2"]
+ }
+ filter {
+   name = "virtualization-type"
+   values = ["hvm"]
  }
 }
 
@@ -19,15 +22,15 @@ data "template_file" "bootstrap" {
   template = "${file("${path.module}/files/bootstrap.sh.tpl")}"
 
   vars {
-    efs_id = "${aws_efs_file_system.testme.id}"
+    efs_id = "${var.efs_id}"
   }
 
 }
 
 resource "aws_launch_configuration" "testme" {
     name                        = "testme"
-    #image_id                    = "${data.aws_ami.amazon-linux-2.id}"
-    image_id = "ami-0de53d8956e8dcf80"
+    image_id                    = "${data.aws_ami.amazon_linux_2.id}"
+    #image_id = "ami-0de53d8956e8dcf80"
 
     instance_type               = "t2.micro"
     key_name                    = "adenisevich"
@@ -137,23 +140,4 @@ POLICY
 
 resource "aws_ecr_repository" "testme" {
   name = "testme"
-}
-
-resource "aws_efs_file_system" "testme" {
-    creation_token = "testme"
-    performance_mode = "generalPurpose"
-    tags {
-        Name = "testme"
-    }
-}
-
-resource "aws_efs_mount_target" "testme" {
-  count = "${length(var.public_subnet_ids)}"
-
-  file_system_id = "${aws_efs_file_system.testme.id}"
-  subnet_id      = "${element(var.public_subnet_ids, count.index)}"
-
-  security_groups = [
-    "${var.vpc_sg_id}"
-  ]
 }

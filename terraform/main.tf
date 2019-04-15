@@ -19,9 +19,17 @@ module "route53" {
   vpc_id      = "${module.vpc.vpc_id}"
 }
 
+module "efs" {
+  source      = "./modules/efs"
+  subnets_count = "${length(var.public_subnets)}"
+  public_subnet_ids = "${module.vpc.public_subnet_ids}"
+  vpc_sg_id = "${module.vpc.vpc_sg_id}"
+}
+
 module "asg" {
   source      = "./modules/asg"
   public_subnet_ids = "${module.vpc.public_subnet_ids}"
   vpc_id = "${module.vpc.vpc_id}"
   vpc_sg_id = "${module.vpc.vpc_sg_id}"
+  efs_id = "${module.efs.efs_id}"
 }
