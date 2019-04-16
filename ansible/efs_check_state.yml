@@ -1,0 +1,73 @@
+---
+- hosts: localhost
+  connection: local
+
+  vars:
+    efs_id: "fs-de9ff387"
+    readiness:
+      - "available"
+
+  tasks:
+
+    # - name: "efs_facts: get efs lifecycle state"
+    #   efs_facts:
+    #     id: "{{ efs_id }}"
+    #   register:
+    #     efs_results
+
+    - name: "shell: ensure efs mount point(s) is(are) available"
+      shell: >
+        aws efs describe-mount-targets \
+                --file-system-id {{ efs_id }} \
+                --query 'MountTargets[*].LifeCycleState' \
+                --output text | tr "\t" "\n"
+      register: wow_list
+      until: wow_list.stdout_lines | unique == readiness
+      retries: 30
+      delay: 10
+
+    # - name: "debug: ensure efs mountpoint(s) is(are) available"
+    #   debug: msg="{{ wow_list.stdout_lines | unique}}"
+    #
+    # - name: "debug: ensure efs mountpoint(s) is(are) available"
+    #   debug: msg="{{ readiness.split() | list }}"
+
+      # loop: '{{ wow_list }}'
+      # until: item.find("available") != -1
+      # retries: 30
+      # delay: 5
+    #
+    # - name: "aggregator"
+    #   set_fact:
+    #     mount_targets: []
+    #
+    # - name: "set_fact: gather"
+    #   set_fact:
+    #     mount_targets: "{{ mount_targets + [ efs_results.ansible_facts.efs[0].mount_targets | map(attribute=\"life_cycle_state\") | list ] | flatten }}"
+    #   # loop: '{{ mount_targets | flatten }}'
+      # until: item.find("available") != -1
+      # retries: 30
+      # delay: 5
+
+    # - name: "debug: ensure efs mountpoint(s) is(are) available"
+    #   debug: msg="{{ mount_targets }}"
+    #
+    # - name: "set_fact: gather"
+    #   set_fact:
+    #     mount_targets: "{{ [ efs_results.ansible_facts.efs[0].mount_targets | map(attribute=\"life_cycle_state\") | list ] | flatten }}"
+    #   loop: '{{ mount_targets }}'
+    #   until: item.find("available") != -1
+    #   retries: 30
+    #   delay: 5
+
+      # loop: '{{ mount_targets }}'
+      # until: item.life_cycle_state.find("available") != -1
+      # retries: 30
+      # delay: 5
+
+    # - name: "debug: ensure efs mountpoint(s) is(are) available"
+    #   debug: msg="{{ item }}"
+    #   loop: "{{ test_list }}"
+    #   until: item.find("available") != -1
+    #   retries: 10
+    #   delay: 30

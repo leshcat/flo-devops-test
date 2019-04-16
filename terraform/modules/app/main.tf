@@ -26,6 +26,18 @@ data "template_file" "bootstrap" {
   }
 }
 
+resource "null_resource" "ensure_efs_available" {
+  triggers {
+      always_trigger = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ansible-playbook efs_check_state.yml -e "efs_id=${var.efs_id}"
+    EOT
+    working_dir = "${path.module}/../../../ansible"
+  }
+}
+
 resource "aws_launch_configuration" "alc" {
   name     = "${var.environment}"
   image_id = "${data.aws_ami.amazon_linux_2.id}"
@@ -69,6 +81,8 @@ resource "aws_autoscaling_group" "asg" {
     value               = "${var.environment}"
     propagate_at_launch = true
   }
+
+  depends_on = ["null_resource.ensure_efs_available"]
 }
 
 resource "aws_alb" "alb" {
