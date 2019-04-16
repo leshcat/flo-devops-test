@@ -1,9 +1,5 @@
 variable "environment" {
-  description = "The name of our environment, i.e. development"
-}
-
-variable "key_name" {
-  description = "The AWS key pair to use for resources"
+  description = "The name of your environment"
 }
 
 variable "vpc_cidr" {

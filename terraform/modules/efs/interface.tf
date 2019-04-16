@@ -1,3 +1,7 @@
+variable "environment" {
+  description = "The name of your environment"
+}
+
 variable "public_subnet_ids" {
   type = "list"
   description = "Hosted Zone name"

@@ -1,13 +1,13 @@
 variable "region" {
-  description = "The AWS region."
+  description = "The AWS region to operate in"
 }
 
-variable "environment" {
-  description = "The name of our environment, i.e. development"
+variable "name" {
+  description = "The name of our environment, i.e.: 'wordpress' used as prefix"
 }
 
-variable "key_name" {
-  description = "The AWS key pair to use for resources"
+variable "deployment" {
+  description = "The name of our deployment type, i.e.: 'dev|prod', used as postfix"
 }
 
 variable "vpc_cidr" {
@@ -36,4 +36,28 @@ variable "cidr_blocks_allowed" {
 
 variable "hosted_zone" {
   description = "Hosted Zone name"
+}
+
+variable "rds_db_name" {
+  description = "RDS DB name"
+}
+
+variable "rds_instance_type" {
+  description = "RDS instance type"
+}
+
+variable "rds_username" {
+  description = "RDS username"
+}
+
+variable "rds_password" {
+  description = "RDS password"
+}
+
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+}
+
+variable "ec2_key_name" {
+  description = "EC2 instance type"
 }

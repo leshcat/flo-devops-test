@@ -1,3 +1,7 @@
+variable "environment" {
+  description = "The name of your environment"
+}
+
 variable "public_subnet_ids" {
   type = "list"
   description = "Hosted Zone name"
@@ -13,4 +17,12 @@ variable "vpc_sg_id" {
 
 variable "efs_id" {
   description = "EFS id"
+}
+
+variable "ec2_instance_type" {
+  description = "EC2 instance type"
+}
+
+variable "ec2_key_name" {
+  description = "EC2 instance type"
 }

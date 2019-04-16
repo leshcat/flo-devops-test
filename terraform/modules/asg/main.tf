@@ -18,7 +18,6 @@ data "aws_ami" "amazon_linux_2" {
 }
 
 data "template_file" "bootstrap" {
-  #count    = "${length(aws_autoscaling_group.testme.desired_capacity)}"
   template = "${file("${path.module}/files/bootstrap.sh.tpl")}"
 
   vars {
@@ -27,18 +26,20 @@ data "template_file" "bootstrap" {
 
 }
 
-resource "aws_launch_configuration" "testme" {
-    name                        = "testme"
+resource "aws_launch_configuration" "alc" {
+    name                        = "${var.environment}"
     image_id                    = "${data.aws_ami.amazon_linux_2.id}"
-    #image_id = "ami-0de53d8956e8dcf80"
 
-    instance_type               = "t2.micro"
-    key_name                    = "adenisevich"
+    instance_type               = "${var.ec2_instance_type}"
+    key_name                    = "${var.ec2_key_name}"
     security_groups             = ["${var.vpc_sg_id}"]
-    associate_public_ip_address = true
+
     user_data            = "${data.template_file.bootstrap.rendered}"
+
+    iam_instance_profile        = "${aws_iam_instance_profile.iam_instance_profile.name}"
+
+    associate_public_ip_address = true
     enable_monitoring           = false
-    iam_instance_profile        = "${aws_iam_instance_profile.testme.name}"
     ebs_optimized               = false
 
     root_block_device {
@@ -53,12 +54,12 @@ resource "aws_launch_configuration" "testme" {
 
 }
 
-resource "aws_autoscaling_group" "testme" {
-    name                      = "testme"
+resource "aws_autoscaling_group" "asg" {
+    name                      = "${var.environment}"
     desired_capacity          = 2
     health_check_grace_period = 300
     health_check_type         = "EC2"
-    launch_configuration      = "${aws_launch_configuration.testme.id}"
+    launch_configuration      = "${aws_launch_configuration.alc.id}"
     max_size                  = 2
     min_size                  = 1
 
@@ -67,17 +68,16 @@ resource "aws_autoscaling_group" "testme" {
 
     tag {
         key   = "Name"
-        value = "testme"
+        value = "${var.environment}"
         propagate_at_launch = true
     }
 
 }
 
-
-resource "aws_alb" "testme" {
+resource "aws_alb" "alb" {
     idle_timeout    = 60
     internal        = false
-    name            = "testme"
+    name            = "${var.environment}"
 
     security_groups = ["${var.vpc_sg_id}"]
     subnets         = ["${var.public_subnet_ids}"]
@@ -85,40 +85,40 @@ resource "aws_alb" "testme" {
     enable_deletion_protection = false
 
     tags {
-        "Name" = "testme"
+        "Name" = "${var.environment}"
     }
 }
 
-resource "aws_lb_target_group" "testme" {
-  name     = "testme"
+resource "aws_lb_target_group" "albtg" {
+  name     = "${var.environment}"
   port     = 80
   protocol = "HTTP"
   vpc_id   = "${var.vpc_id}"
 }
 
-resource "aws_lb_listener" "testme" {
-  load_balancer_arn = "${aws_alb.testme.arn}"
+resource "aws_lb_listener" "alblistener" {
+  load_balancer_arn = "${aws_alb.alb.arn}"
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
     type             = "forward"
-    target_group_arn = "${aws_lb_target_group.testme.arn}"
+    target_group_arn = "${aws_lb_target_group.albtg.arn}"
   }
 }
 
 resource "aws_autoscaling_attachment" "asg_attachment_bar" {
-  autoscaling_group_name = "${aws_autoscaling_group.testme.id}"
-  alb_target_group_arn   = "${aws_lb_target_group.testme.arn}"
+  autoscaling_group_name = "${aws_autoscaling_group.asg.id}"
+  alb_target_group_arn   = "${aws_lb_target_group.albtg.arn}"
 }
 
-resource "aws_iam_instance_profile" "testme" {
-  name = "testme"
-  role = "${aws_iam_role.testme.name}"
+resource "aws_iam_instance_profile" "iam_instance_profile" {
+  name = "${var.environment}"
+  role = "${aws_iam_role.iam_ecr_role.name}"
 }
 
-resource "aws_iam_role" "testme" {
-    name               = "testme"
+resource "aws_iam_role" "iam_ecr_role" {
+    name               = "${var.environment}"
     path               = "/"
     assume_role_policy = <<POLICY
 {
@@ -135,9 +135,4 @@ resource "aws_iam_role" "testme" {
   ]
 }
 POLICY
-}
-
-
-resource "aws_ecr_repository" "testme" {
-  name = "testme"
 }
