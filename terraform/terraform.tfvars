@@ -7,9 +7,7 @@ deployment = "dev"
 
 # EC2
 ec2_key_name = "adenisevich"
-ec2_key_path = "/Users/alexeydenisevich/.ssh/adenisevich.pem"
 ec2_instance_type = "t2.micro"
-
 
 # RDS
 rds_instance_type = "db.t2.micro"

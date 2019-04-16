@@ -134,3 +134,23 @@ resource "aws_iam_role" "iam_ecr_role" {
 }
 POLICY
 }
+
+resource "aws_iam_role_policy" "iam_ecr_policy" {
+  name = "${var.environment}-ecr"
+  role = "${aws_iam_role.iam_ecr_role.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "ecr:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}

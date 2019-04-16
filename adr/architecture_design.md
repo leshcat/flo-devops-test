@@ -1,3 +1,4 @@
+
 # Flo DevOps test ADR
 
 Contents:
@@ -89,15 +90,19 @@ Minimal requirements:
    4. AWS ECS. Since our app is dockerized, ECS nicely fits, however it will take much more time to figure out its internals than option n2.
    5. AWS EKS. The best solution at the present time for dockerized apps, however it also brings much higher complexity both in terms of provisioning service & creating actual configurations.
 
+
 * Cluster endpoint should be accessible via test.wodpress.int
 
-  As expected, since domain 'wodpress.int' is already occupied, at the moment following positions are available:
+  Since domain 'wodpress.int' is already occupied, at the moment following positions are available:
 
   * Create AWS Route53 private zone, then use one of the possible solutions:
 
+  * Then one of the following:
+
    1. Semi-hack way:
-     - Create 'web.wordpress.int' alias for ALB endpoint
-     - Modify /etc/hosts or dnsmasq to emulate wordpress.int ownership
+      - Create 'web.wordpress.int' alias for ALB endpoint
+      - Modify /etc/hosts or dnsmasq to emulate wordpress.int ownership
+
 
    2. Setup up dns forwarder, similar to:
    https://aws.amazon.com/premiumsupport/knowledge-center/r53-private-ubuntu/
@@ -113,22 +118,27 @@ Minimal requirements:
 * It should be possible to update in compliance with zero downtime deployment practice
 
    While AWS Beanstalk, ECS and EKS have built-in zero downtime deployment mechanisms, in our case Ansible can handle this process, examples:
+
+
    Text: https://medium.com/opendoor-labs/ami-rolling-update-using-ansible-b7c216292b5f
+
+
    Video: https://sysadmincasts.com/episodes/47-zero-downtime-deployments-with-ansible-part-4-4
 
 * Use SSL certificate for cluster setup
 
 Create self-signed certificate, upload via services above and attach to ALB.
+
    Positions:
-     IAM: https://aws.amazon.com/premiumsupport/knowledge-center/import-ssl-certificate-to-iam/
-     ACM: AWS Certificate Manager (blocked on current AWS account)
+       1. IAM: https://aws.amazon.com/premiumsupport/knowledge-center/import-ssl-certificate-to-iam/
+       2. ACM: AWS Certificate Manager (blocked on current AWS account)
 
 * Create AWS EFS attachments for cluster instances
 
   EFS attachments will come handy when there will be the need to share 'uploads' folder between the containers, example:
 
   volumes:
-  - /mnt/efs/wordpress/uploads:/var/www/html/wp-content/uploads
+  \- /mnt/efs/wordpress/uploads:/var/www/html/wp-content/uploads
 
 
 ### Argument

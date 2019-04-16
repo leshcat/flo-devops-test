@@ -3,7 +3,7 @@
 Contents:
 * [Preamble](#preamble)
 * [Provisioning Infrastructure](#provisioning-infrastructure)
-  * [Bugs/ToDo](#pi-bugs-todo)
+  * [Bugs-Todo](#bugs-todo)
 * [Provisioning App](#provisioning-app)
 * [ADR]($adr)
 
@@ -29,12 +29,12 @@ https://github.com/dmitry-yackevich/flo-devops-test
   * `$ cd ${git_root}/terraform`
   * `$ terraform init`
   * Change desired variables to your taste @  *terraform.tfvars*, [example](terraform/terraform.tfvars)
-  * `$ terraform plan`
-  * `$ terraform apply`
+  * `$ terraform plan [-var 'region=${your_region}']`
+  * `$ terraform apply [-var 'region=${your_region}']`
 
-### Bugs/ToDo
+### Bugs-Todo
 
-* EFS mount point fails to mount automatically, no readiness check implemented
+* EFS mount point fails to mount automatically, no readiness check implemented yet
 * No Route53 alias record created
 * All-in-one SG
 * No ASG lifecycle hooks implemented

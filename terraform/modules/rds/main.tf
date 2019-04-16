@@ -10,6 +10,7 @@ resource "aws_db_instance" "mysql" {
   backup_retention_period = 7
   backup_window           = "20:06-20:36"
   maintenance_window      = "fri:22:08-fri:22:38"
+  skip_final_snapshot     = true
 
   identifier     = "${var.environment}"
   name           = "${var.rds_db_name}"
