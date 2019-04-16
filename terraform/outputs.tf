@@ -26,6 +26,10 @@ output "efs_id" {
   value = "${module.efs.efs_id}"
 }
 
+output "efs_mount_dns_names" {
+  value = ["${module.efs.efs_mount_dns_names}"]
+}
+
 output "ecr_name" {
   value = "${module.ecr.ecr_name}"
 }
@@ -35,29 +39,29 @@ output "ecr_url" {
 }
 
 output "ami_id" {
-  value = "${module.asg.ami_id}"
+  value = "${module.app.ami_id}"
 }
 
 output "alc_id" {
-  value = "${module.asg.alc_id}"
+  value = "${module.app.alc_id}"
 }
 
 output "asg_id" {
-  value = "${module.asg.asg_id}"
+  value = "${module.app.asg_id}"
 }
 
 output "alb_id" {
-  value = "${module.asg.alb_id}"
+  value = "${module.app.alb_id}"
 }
 
 output "alb_dns_name" {
-  value = "${module.asg.alb_dns_name}"
+  value = "${module.app.alb_dns_name}"
 }
 
 output "iam_ecr_role_id" {
-  value = "${module.asg.iam_ecr_role_id}"
+  value = "${module.app.iam_ecr_role_id}"
 }
 
 output "iam_ecr_role_unique_id" {
-  value = "${module.asg.iam_ecr_role_unique_id}"
+  value = "${module.app.iam_ecr_role_unique_id}"
 }

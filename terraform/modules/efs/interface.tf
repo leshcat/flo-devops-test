@@ -3,7 +3,7 @@ variable "environment" {
 }
 
 variable "public_subnet_ids" {
-  type = "list"
+  type        = "list"
   description = "Hosted Zone name"
 }
 

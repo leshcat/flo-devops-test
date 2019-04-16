@@ -23,6 +23,6 @@ variable "vpc_sg_id" {
 }
 
 variable "public_subnet_ids" {
-  type = "list"
+  type        = "list"
   description = "Public subnets"
 }

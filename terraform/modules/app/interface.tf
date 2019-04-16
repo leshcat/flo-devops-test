@@ -3,7 +3,7 @@ variable "environment" {
 }
 
 variable "public_subnet_ids" {
-  type = "list"
+  type        = "list"
   description = "Hosted Zone name"
 }
 
@@ -17,6 +17,10 @@ variable "vpc_sg_id" {
 
 variable "efs_id" {
   description = "EFS id"
+}
+
+variable "efs_mount_dns_names" {
+  description = "EFS mount dns names (to ensure target is ready)"
 }
 
 variable "ec2_instance_type" {
