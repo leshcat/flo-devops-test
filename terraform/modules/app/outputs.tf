@@ -18,10 +18,14 @@ output "alb_dns_name" {
   value = "${aws_alb.alb.dns_name}"
 }
 
-output "iam_ecr_role_id" {
-  value = "${aws_iam_role.iam_ecr_role.id}"
+output "alb_zone_id" {
+  value = "${aws_alb.alb.zone_id}"
 }
 
-output "iam_ecr_role_unique_id" {
-  value = "${aws_iam_role.iam_ecr_role.unique_id}"
+output "iam_asg_role_id" {
+  value = "${aws_iam_role.iam_asg_role.id}"
+}
+
+output "iam_asg_role_unique_id" {
+  value = "${aws_iam_role.iam_asg_role.unique_id}"
 }

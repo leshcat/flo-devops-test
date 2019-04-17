@@ -16,7 +16,10 @@ module "route53" {
   source      = "./modules/route53"
   environment = "${var.name}-${var.deployment}"
   hosted_zone = "${var.hosted_zone}"
+  alias_record = "${var.alias_record}"
   vpc_id      = "${module.vpc.vpc_id}"
+  alb_dns_name = "${module.app.alb_dns_name}"
+  alb_zone_id = "${module.app.alb_zone_id}"
 }
 
 module "efs" {
@@ -42,6 +45,7 @@ module "rds" {
 
 module "app" {
   source              = "./modules/app"
+  region              = "${var.region}"
   environment         = "${var.name}-${var.deployment}"
   public_subnet_ids   = "${module.vpc.public_subnet_ids}"
   vpc_id              = "${module.vpc.vpc_id}"

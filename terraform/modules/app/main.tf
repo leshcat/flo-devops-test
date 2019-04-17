@@ -23,6 +23,9 @@ data "template_file" "bootstrap" {
 
   vars {
     efs_id = "${var.efs_id}"
+    region = "${var.region}"
+    autoscaling_lifecycle_hook_name = "${var.environment}"
+    autoscaling_group_name = "${var.environment}"
   }
 }
 
@@ -63,6 +66,7 @@ resource "aws_launch_configuration" "alc" {
   lifecycle {
     create_before_destroy = true
   }
+
 }
 
 resource "aws_autoscaling_group" "asg" {
@@ -75,6 +79,13 @@ resource "aws_autoscaling_group" "asg" {
   min_size                  = 1
 
   vpc_zone_identifier = ["${var.public_subnet_ids}"]
+
+  initial_lifecycle_hook {
+      name                 = "${var.environment}"
+      default_result       = "CONTINUE"
+      heartbeat_timeout    = 2000
+      lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
+  }
 
   tag {
     key                 = "Name"
@@ -125,10 +136,10 @@ resource "aws_autoscaling_attachment" "asg_attachment_bar" {
 
 resource "aws_iam_instance_profile" "iam_instance_profile" {
   name = "${var.environment}"
-  role = "${aws_iam_role.iam_ecr_role.name}"
+  role = "${aws_iam_role.iam_asg_role.name}"
 }
 
-resource "aws_iam_role" "iam_ecr_role" {
+resource "aws_iam_role" "iam_asg_role" {
   name = "${var.environment}"
   path = "/"
 
@@ -151,7 +162,7 @@ POLICY
 
 resource "aws_iam_role_policy" "iam_ecr_policy" {
   name = "${var.environment}-ecr"
-  role = "${aws_iam_role.iam_ecr_role.id}"
+  role = "${aws_iam_role.iam_asg_role.id}"
 
   policy = <<EOF
 {
@@ -161,6 +172,26 @@ resource "aws_iam_role_policy" "iam_ecr_policy" {
       "Effect": "Allow",
       "Action": [
         "ecr:*"
+      ],
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "iam_asg_policy" {
+  name = "${var.environment}-asg"
+  role = "${aws_iam_role.iam_asg_role.id}"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Action": [
+        "autoscaling:*"
       ],
       "Resource": "*"
     }

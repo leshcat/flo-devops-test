@@ -14,6 +14,10 @@ output "zone_id" {
   value = "${module.route53.zone_id}"
 }
 
+output "alias_fqdn" {
+  value = "${module.route53.alias_fqdn}"
+}
+
 output "rds_id" {
   value = "${module.rds.rds_id}"
 }
@@ -58,10 +62,14 @@ output "alb_dns_name" {
   value = "${module.app.alb_dns_name}"
 }
 
-output "iam_ecr_role_id" {
-  value = "${module.app.iam_ecr_role_id}"
+output "alb_zone_id" {
+  value = "${module.app.alb_zone_id}"
 }
 
-output "iam_ecr_role_unique_id" {
-  value = "${module.app.iam_ecr_role_unique_id}"
+output "iam_asg_role_id" {
+  value = "${module.app.iam_asg_role_id}"
+}
+
+output "iam_asg_role_unique_id" {
+  value = "${module.app.iam_asg_role_unique_id}"
 }

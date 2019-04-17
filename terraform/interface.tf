@@ -38,6 +38,10 @@ variable "hosted_zone" {
   description = "Hosted Zone name"
 }
 
+variable "alias_record" {
+  description = "Alias record for ALB"
+}
+
 variable "rds_db_name" {
   description = "RDS DB name"
 }

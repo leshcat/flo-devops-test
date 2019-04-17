@@ -34,10 +34,11 @@ https://github.com/dmitry-yackevich/flo-devops-test
 
 ### Bugs-Todo
 
-* EFS mount point fails to mount automatically, no readiness check implemented yet [+]
-* No Route53 alias record created
+* [+] EFS mount point fails to mount automatically, no readiness check implemented yet
+* [+] No Route53 alias record created
+* [+] No ASG lifecycle hooks implemented
+* [non-relevant for MVP]
 * All-in-one SG
-* No ASG lifecycle hooks implemented
 * No ami override (auto selection, latest amz2_linux)
 * No SSL generated/used (access on test account limited)
 * No encryption used

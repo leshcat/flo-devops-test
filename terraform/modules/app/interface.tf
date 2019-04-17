@@ -1,3 +1,7 @@
+variable "region" {
+  description = "The AWS region to operate in"
+}
+
 variable "environment" {
   description = "The name of your environment"
 }

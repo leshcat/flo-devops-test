@@ -2,3 +2,4 @@
 terraform.tfstate*
 .terraform.tfstate*
 nodes/data/
+.DS_Store

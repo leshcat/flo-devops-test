@@ -28,3 +28,4 @@ cidr_blocks_allowed = ["0.0.0.0/0"]
 
 # Route 53
 hosted_zone = "wordpress.int"
+alias_record = "web.wordpress.int"
