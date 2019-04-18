@@ -22,21 +22,23 @@ data "template_file" "bootstrap" {
   template = "${file("${path.module}/files/bootstrap.sh.tpl")}"
 
   vars {
-    efs_id = "${var.efs_id}"
-    region = "${var.region}"
+    efs_id                          = "${var.efs_id}"
+    region                          = "${var.region}"
     autoscaling_lifecycle_hook_name = "${var.environment}"
-    autoscaling_group_name = "${var.environment}"
+    autoscaling_group_name          = "${var.environment}"
   }
 }
 
 resource "null_resource" "ensure_efs_available" {
   triggers {
-      always_trigger = "${timestamp()}"
+    always_trigger = "${timestamp()}"
   }
+
   provisioner "local-exec" {
     command = <<-EOT
       ansible-playbook efs_check_state.yml -e "efs_id=${var.efs_id}"
     EOT
+
     working_dir = "${path.module}/../../../ansible"
   }
 }
@@ -66,7 +68,6 @@ resource "aws_launch_configuration" "alc" {
   lifecycle {
     create_before_destroy = true
   }
-
 }
 
 resource "aws_autoscaling_group" "asg" {
@@ -81,10 +82,10 @@ resource "aws_autoscaling_group" "asg" {
   vpc_zone_identifier = ["${var.public_subnet_ids}"]
 
   initial_lifecycle_hook {
-      name                 = "${var.environment}"
-      default_result       = "CONTINUE"
-      heartbeat_timeout    = 2000
-      lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
+    name                 = "${var.environment}"
+    default_result       = "CONTINUE"
+    heartbeat_timeout    = 2000
+    lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
   }
 
   tag {

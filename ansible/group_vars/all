@@ -1,0 +1,3 @@
+# ansible_connection: ssh
+# ansible_ssh_user: ec2-user
+# moved to move convenient ansible.cfg
