@@ -1,0 +1,112 @@
+---
+
+- name: Get EC2 Metadata
+  action: ec2_metadata_facts
+  tags:
+     - elb
+
+- name: Get initial list of target groups
+  delegate_to: localhost
+  elb_target_facts:
+    instance_id: "{{ ansible_ec2_instance_id }}"
+    region: "{{ ansible_ec2_placement_region }}"
+  register: target_facts
+  tags:
+     - elb
+
+- name: save fact for later
+  set_fact:
+    original_tgs: "{{ target_facts.instance_target_groups }}"
+  tags:
+     - elb
+
+- name: Deregister instance from all target groups
+  delegate_to: localhost
+  elb_target:
+      target_group_arn: "{{ item.0.target_group_arn }}"
+      target_port: "{{ item.1.target_port }}"
+      target_az: "{{ item.1.target_az }}"
+      target_id: "{{ item.1.target_id }}"
+      state: absent
+      target_status: "draining"
+      region: "{{ ansible_ec2_placement_region }}"
+  with_subelements:
+    - "{{ original_tgs }}"
+    - "targets"
+  tags:
+     - elb
+
+- name: wait for all targets to deregister simultaneously
+  delegate_to: localhost
+  elb_target_facts:
+    get_unused_target_groups: false
+    instance_id: "{{ ansible_ec2_instance_id }}"
+    region: "{{ ansible_ec2_placement_region }}"
+  register: target_facts
+  until: (target_facts.instance_target_groups | length) == 0
+  retries: 60
+  delay: 10
+  tags:
+     - elb
+
+- name: install docker compose
+  shell: >
+    curl -L https://github.com/docker/compose/releases/download/1.24.0/docker-compose-`uname -s`-`uname -m` -o /usr/local/bin/docker-compose;
+    chmod +x /usr/local/bin/docker-compose
+  become: yes
+
+- name: Ansible copy directory to the remote server
+  copy:
+    src: "bedrock-wordpress-docker"
+    dest: "/mnt/efs/"
+    force: true
+  become: yes
+
+- name: stop the httpd
+  shell: systemctl stop httpd
+  become: yes
+
+- name: run the docker
+  shell: >
+    /usr/local/bin/docker-compose --file {{ docker_compose_file }} up -d --force-recreate
+  args:
+    chdir: /mnt/efs/bedrock-wordpress-docker
+  become: yes
+
+- name: reregister in elbv2s
+  delegate_to: localhost
+  elb_target:
+    region: "{{ ansible_ec2_placement_region }}"
+    target_group_arn: "{{ item.0.target_group_arn }}"
+    target_port: "{{ item.1.target_port }}"
+    target_az: "{{ item.1.target_az }}"
+    target_id: "{{ item.1.target_id }}"
+    state: present
+    target_status: "initial"
+  with_subelements:
+    - "{{ original_tgs }}"
+    - "targets"
+  tags:
+     - elb
+
+# wait until all groups associated with this instance are 'healthy' or
+# 'unused'
+- name: wait for registration
+  delegate_to: localhost
+  elb_target_facts:
+    get_unused_target_groups: false
+    instance_id: "{{ ansible_ec2_instance_id }}"
+    region: "{{ ansible_ec2_placement_region }}"
+  register: target_facts
+  until: (target_facts.instance_target_groups |
+          map(attribute='targets') |
+          flatten |
+          map(attribute='target_health') |
+          rejectattr('state', 'equalto', 'healthy') |
+          rejectattr('state', 'equalto', 'unused') |
+          list |
+          length) == 0
+  retries: 61
+  delay: 10
+  tags:
+     - elb

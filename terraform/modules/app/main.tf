@@ -94,7 +94,10 @@ resource "aws_autoscaling_group" "asg" {
     propagate_at_launch = true
   }
 
-  depends_on = ["null_resource.ensure_efs_available"]
+  depends_on = [
+    "null_resource.ensure_efs_available"
+  ]
+
 }
 
 resource "aws_alb" "alb" {

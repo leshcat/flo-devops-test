@@ -1,0 +1,35 @@
+version: '2'
+
+services:
+  fpm:
+    build:
+      context: ./fpm-wordpress
+      dockerfile: Dockerfile
+    container_name: fpm
+    volumes:
+      - /var/www/html
+    environment:
+      DB_NAME: wordpress
+      DB_USER: wordpress
+      DB_PASSWORD: wordpress
+      DB_HOST: wordpress-dev.chec6a0rjsmy.eu-central-1.rds.amazonaws.com
+      WP_ENV: development
+      WP_HOME: http://web.wordpress.int
+      WP_SITEURL: http://web.wordpress.int/wp
+      # uncomment below for new installations
+      ADMIN_USER: admin
+      ADMIN_PASS: admin
+      ADMIN_EMAIL: test@test.com
+      SITE_TITLE: wordpress
+  nginx:
+    image: iamdb/nginx-bedrock-wordpress
+    container_name: nginx
+    links:
+      - fpm:fpm
+    volumes_from:
+      - fpm
+    ports:
+      - "80:80"
+    environment:
+      # uncomment below to remove installation password
+      ALLOW_INSTALL: "yes"
