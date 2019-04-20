@@ -34,12 +34,20 @@ output "efs_mount_dns_names" {
   value = ["${module.efs.efs_mount_dns_names}"]
 }
 
-output "ecr_name" {
-  value = "${module.ecr.ecr_name}"
+output "ecr_nginx_name" {
+  value = "${module.ecr.ecr_nginx_name}"
 }
 
-output "ecr_url" {
-  value = "${module.ecr.ecr_url}"
+output "ecr_nginx_url" {
+  value = "${module.ecr.ecr_nginx_url}"
+}
+
+output "ecr_wordpress_name" {
+  value = "${module.ecr.ecr_wordpress_name}"
+}
+
+output "ecr_wordpress_url" {
+  value = "${module.ecr.ecr_wordpress_url}"
 }
 
 output "ami_id" {

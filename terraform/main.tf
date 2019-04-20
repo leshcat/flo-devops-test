@@ -43,6 +43,11 @@ module "rds" {
   public_subnet_ids = "${module.vpc.public_subnet_ids}"
 }
 
+module "ecr" {
+  source      = "./modules/ecr"
+  environment = "${var.name}-${var.deployment}"
+}
+
 module "app" {
   source              = "./modules/app"
   region              = "${var.region}"
@@ -56,7 +61,18 @@ module "app" {
   ec2_key_name        = "${var.ec2_key_name}"
 }
 
-module "ecr" {
-  source      = "./modules/ecr"
-  environment = "${var.name}-${var.deployment}"
+resource "null_resource" "variables_and_outputs" {
+  triggers {
+    always_trigger = "${timestamp()}"
+  }
+  provisioner "local-exec" {
+    command = <<-EOT
+      ansible_vars_path="../ansible/group_vars"
+      terraform output | sed "1s/^..//" | sed "s/[ ]*=[ ]*/: /g" > $ansible_vars_path/terraform_outputs.yaml
+      cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > $ansible_vars_path/terraform_tfstate.yaml
+    EOT
+  }
+  depends_on = [
+    "module.app"
+  ]
 }
