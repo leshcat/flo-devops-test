@@ -1,0 +1,19 @@
+---
+
+- block:
+
+  - name: "copy: copy app contents to the remote server(s)"
+    copy:
+      src: "{{ app_name }}/{{ app_docker_compose }}"
+      dest: "{{ app_location }}/{{ app_docker_compose }}"
+      force: true
+
+
+  - name: "template: template the dotenv file for docker-compose"
+    template:
+      src: "dotenv.j2"
+      dest: "{{ app_location }}/.env"
+      force: true
+
+  become: yes
+  #run_once: true

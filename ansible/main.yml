@@ -1,8 +1,0 @@
----
-
-- hosts: tag_Name_wordpress_dev
-  serial: 1
-
-  roles:
-    - connect_me
-#    - update_target

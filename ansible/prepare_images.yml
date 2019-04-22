@@ -1,0 +1,13 @@
+---
+
+- hosts: localhost
+
+  vars_files:
+    - group_vars/terraform_outputs.yaml
+    - group_vars/terraform_tfvars.yaml
+
+  tasks:
+    - include_role:
+        name: prep_images
+      tags:
+        - prep

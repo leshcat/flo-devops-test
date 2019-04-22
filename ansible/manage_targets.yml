@@ -1,0 +1,26 @@
+---
+
+- hosts: all
+
+  vars_files:
+    - group_vars/terraform_outputs.yaml
+    - group_vars/terraform_tfvars.yaml
+
+  tasks:
+    - include_role:
+        name: prep_app
+      tags:
+        - prep_app
+
+- hosts: all
+  serial: 1
+
+  vars_files:
+    - group_vars/terraform_outputs.yaml
+    - group_vars/terraform_tfvars.yaml
+
+  tasks:
+    - include_role:
+        name: manage_targets
+      tags:
+        - manage_targets

@@ -1,0 +1,111 @@
+---
+
+- name: "action: get EC2 Metadata"
+  action: ec2_metadata_facts
+  tags:
+     - manage_targets
+
+- block:
+
+  - name: "elb_target_facts: get initial list of target groups"
+    elb_target_facts:
+      instance_id: "{{ ansible_ec2_instance_id }}"
+      region: "{{ ansible_ec2_placement_region }}"
+    register: target_facts
+    tags:
+       - manage_targets
+
+  - name: "set_fact: save 'target_facts.instance_target_groups' fact for later"
+    set_fact:
+      original_tgs: "{{ target_facts.instance_target_groups }}"
+    tags:
+       - manage_targets
+
+  - name: "elb_target: deregister instance from all target groups"
+    elb_target:
+        target_group_arn: "{{ item.0.target_group_arn }}"
+        target_port: "{{ item.1.target_port }}"
+        target_az: "{{ item.1.target_az }}"
+        target_id: "{{ item.1.target_id }}"
+        state: absent
+        target_status: "draining"
+        region: "{{ ansible_ec2_placement_region }}"
+    with_subelements:
+      - "{{ original_tgs }}"
+      - "targets"
+    tags:
+       - roll_update
+       - manage_targets
+
+  - name: "elb_target_facts: wait for all targets to deregister simultaneously"
+    elb_target_facts:
+      get_unused_target_groups: false
+      instance_id: "{{ ansible_ec2_instance_id }}"
+      region: "{{ ansible_ec2_placement_region }}"
+    register: target_facts
+    until: (target_facts.instance_target_groups | length) == 0
+    retries: 60
+    delay: 10
+    tags:
+       - roll_update
+       - manage_targets
+
+  delegate_to: localhost
+
+- block:
+
+  - name: "service: stop service httpd, if started"
+    service:
+      name: httpd
+      state: stopped
+
+  - name: "shell: run docker-compose"
+    shell: >
+      $(aws ecr get-login --no-include-email --region {{ region }}) && \
+      /usr/local/bin/docker-compose --file {{ app_docker_compose }} up -d --force-recreate
+    args:
+      chdir: "{{ app_location }}"
+
+  become: yes
+  tags:
+     - manage_targets
+
+- block:
+
+  - name: "elb_target: re-register in elbv2s"
+    elb_target:
+      region: "{{ ansible_ec2_placement_region }}"
+      target_group_arn: "{{ item.0.target_group_arn }}"
+      target_port: "{{ item.1.target_port }}"
+      target_az: "{{ item.1.target_az }}"
+      target_id: "{{ item.1.target_id }}"
+      state: present
+      target_status: "initial"
+    with_subelements:
+      - "{{ original_tgs }}"
+      - "targets"
+    tags:
+       - roll_update
+       - manage_targets
+
+  - name: "elb_target_facts: wait for target registration"
+    elb_target_facts:
+      get_unused_target_groups: false
+      instance_id: "{{ ansible_ec2_instance_id }}"
+      region: "{{ ansible_ec2_placement_region }}"
+    register: target_facts
+    until: (target_facts.instance_target_groups |
+            map(attribute='targets') |
+            flatten |
+            map(attribute='target_health') |
+            rejectattr('state', 'equalto', 'healthy') |
+            rejectattr('state', 'equalto', 'unused') |
+            list |
+            length) == 0
+    retries: 60
+    delay: 10
+    tags:
+       - roll_update
+       - manage_targets
+
+  delegate_to: localhost

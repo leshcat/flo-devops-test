@@ -65,14 +65,35 @@ resource "null_resource" "variables_and_outputs" {
   triggers {
     always_trigger = "${timestamp()}"
   }
+
   provisioner "local-exec" {
     command = <<-EOT
       ansible_vars_path="../ansible/group_vars"
       terraform output | sed "1s/^..//" | sed "s/[ ]*=[ ]*/: /g" > $ansible_vars_path/terraform_outputs.yaml
-      cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > $ansible_vars_path/terraform_tfstate.yaml
+      cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > $ansible_vars_path/terraform_tfvars.yaml
     EOT
   }
+
   depends_on = [
-    "module.app"
+    "module.app",
+    "module.rds",
+  ]
+}
+
+resource "null_resource" "prepare_images" {
+  triggers {
+    always_trigger = "${timestamp()}"
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      ansible-playbook prepare_images.yml
+    EOT
+
+    working_dir = "${path.module}/../../../ansible"
+  }
+
+  depends_on = [
+    "null_resource.variables_and_outputs"
   ]
 }

@@ -1,1 +1,28 @@
-docker_compose_file: docker-compose-dbless.yml
+# app specifics
+app_location: "/mnt/efs/"
+app_name: "bedrock-wordpress-docker"
+app_docker_compose: "docker-compose.yml"
+
+app_schema: "http"
+app_frontend_port: "80"
+
+deploy_version: "latest"
+
+app_versions: [
+  v1,
+  v2,
+  latest
+]
+
+# wp specifics
+wp_env: development
+admin_user: admin
+admin_pass: admin
+admin_email: test@test.com
+site_title: wordpress
+
+# repo mappings
+ecr_repositories: {
+  leshcat/nginx-wordpress: "{{ ecr_nginx_url }}",
+  leshcat/fpm-wordpress: "{{ ecr_wordpress_url }}"
+}
