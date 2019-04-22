@@ -15,5 +15,11 @@
       dest: "{{ app_location }}/.env"
       force: true
 
+  - name: "file: create wordpress shared uploads folder"
+    file:
+      path: "{{ wp_uploads }}"
+      state: directory
+      mode: 0777
+
   become: yes
   #run_once: true

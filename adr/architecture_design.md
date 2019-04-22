@@ -49,7 +49,7 @@ Decided to comply with task's requirements.
 
 ### Status
 
-Pending. Open to revisiting if/when new significant info arrives.
+Decided & implemented. Open to revisiting if/when new significant info arrives.
 
 
 ## Details
@@ -90,6 +90,7 @@ Minimal requirements:
    4. AWS ECS. Since our app is dockerized, ECS nicely fits, however it will take much more time to figure out its internals than option n2.
    5. AWS EKS. The best solution at the present time for dockerized apps, however it also brings much higher complexity both in terms of provisioning service & creating actual configurations.
 
+Option *n2* was selected as the simplest/effective solution
 
 * Cluster endpoint should be accessible via test.wodpress.int
 
@@ -112,12 +113,12 @@ Minimal requirements:
 * Wordpress internals should be dockerized (You are allowed to use https://roots.io/bedrock/ fork)
 
    While there is no practical need for creating your own Dockerfile for this task, it still would be good for training purposes.
-   Docker-compose can hold the configuration required for running Wordpress.
+   Docker-compose with dotenv can hold the configuration required for running Wordpress.
    AWS ECR can effectively store the built images.
 
 * It should be possible to update in compliance with zero downtime deployment practice
 
-   While AWS Beanstalk, ECS and EKS have built-in zero downtime deployment mechanisms, in our case Ansible can handle this process, examples:
+   While AWS Beanstalk, ECS and EKS have built-in zero downtime deployment mechanisms, in our case Ansible can handle this process via "rolling-update" feature, examples:
 
 
    Text: https://medium.com/opendoor-labs/ami-rolling-update-using-ansible-b7c216292b5f

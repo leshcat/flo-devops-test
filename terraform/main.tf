@@ -59,6 +59,7 @@ module "app" {
   efs_mount_dns_names = "${module.efs.efs_mount_dns_names}"
   ec2_instance_type   = "${var.ec2_instance_type}"
   ec2_key_name        = "${var.ec2_key_name}"
+
 }
 
 resource "null_resource" "variables_and_outputs" {
@@ -68,15 +69,15 @@ resource "null_resource" "variables_and_outputs" {
 
   provisioner "local-exec" {
     command = <<-EOT
-      ansible_vars_path="../ansible/group_vars"
-      terraform output | sed "1s/^..//" | sed "s/[ ]*=[ ]*/: /g" > $ansible_vars_path/terraform_outputs.yaml
-      cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > $ansible_vars_path/terraform_tfvars.yaml
+      ansible-playbook terraform_outputs.yml
     EOT
+
+    working_dir = "${path.module}/../ansible"
   }
 
   depends_on = [
-    "module.app",
     "module.rds",
+    "module.app"
   ]
 }
 
@@ -90,7 +91,7 @@ resource "null_resource" "prepare_images" {
       ansible-playbook prepare_images.yml
     EOT
 
-    working_dir = "${path.module}/../../../ansible"
+    working_dir = "${path.module}/../ansible"
   }
 
   depends_on = [

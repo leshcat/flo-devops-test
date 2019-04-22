@@ -16,5 +16,5 @@
                 --output text | tr "\t" "\n"
       register: lifecycle_state
       until: lifecycle_state.stdout_lines | unique == readiness
-      retries: 30
+      retries: 60
       delay: 10

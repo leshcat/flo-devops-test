@@ -1,0 +1,6 @@
+awscli
+ansible~=2.7.1
+jmespath
+yamllint
+boto
+boto3

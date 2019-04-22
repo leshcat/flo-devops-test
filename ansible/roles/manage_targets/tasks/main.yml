@@ -59,10 +59,16 @@
       name: httpd
       state: stopped
 
-  - name: "shell: run docker-compose"
-    shell: >
-      $(aws ecr get-login --no-include-email --region {{ region }}) && \
-      /usr/local/bin/docker-compose --file {{ app_docker_compose }} up -d --force-recreate
+  - name: "shell: run docker-compose down"
+    shell: |
+      /usr/local/bin/docker-compose --file {{ app_docker_compose }} down -v
+    args:
+      chdir: "{{ app_location }}"
+
+  - name: "shell: run docker-compose up"
+    shell: |
+      $(aws ecr get-login --no-include-email --region {{ region }})
+      /usr/local/bin/docker-compose --file {{ app_docker_compose }} up -d
     args:
       chdir: "{{ app_location }}"
 

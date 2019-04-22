@@ -1,0 +1,12 @@
+---
+- hosts: localhost
+
+  tasks:
+
+    - name: "shell: ensure efs mount-point(s) is(are) available"
+      shell: |
+        ansible_vars_path="../ansible/group_vars"
+        terraform output | sed "s/[ ]*=[ ]*/: /g" > ${ansible_vars_path}/terraform_outputs.yaml
+        cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > ${ansible_vars_path}/terraform_tfvars.yaml
+      args:
+        chdir: "../terraform"

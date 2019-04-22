@@ -1,5 +1,6 @@
 # app specifics
 app_location: "/mnt/efs/"
+wp_uploads: "{{ app_location }}/wordpress_uploads"
 app_name: "bedrock-wordpress-docker"
 app_docker_compose: "docker-compose.yml"
 

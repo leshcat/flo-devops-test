@@ -81,3 +81,7 @@ output "iam_asg_role_id" {
 output "iam_asg_role_unique_id" {
   value = "${module.app.iam_asg_role_unique_id}"
 }
+
+output "tag_di_name" {
+  value = "tag_Name_${var.name}_${var.deployment}"
+}

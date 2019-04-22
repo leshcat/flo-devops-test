@@ -4,4 +4,4 @@ terraform.tfstate*
 nodes/data/
 .DS_Store
 terraform_outputs.yaml
-terraform_tfstate.yaml
+terraform_tfvars.yaml
