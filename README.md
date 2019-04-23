@@ -25,6 +25,7 @@ Terraform is used to provide whole infrastructure required for the app.
   * AWS_ACCESS_KEY_ID
   * AWS_SECRET_ACCESS_KEY
   * AWS_DEFAULT_REGION
+  * TF_VAR_region (i.e.: export TF_VAR_region=us-east-1)
   * [AWS_SESSION_TOKEN]
 
 
@@ -34,15 +35,18 @@ Terraform is used to provide whole infrastructure required for the app.
 
   * `$ cd ${git_root}/terraform`
   * `$ terraform init`
-  * Change desired variables to your taste @  *terraform.tfvars*, [example](terraform/terraform.tfvars)
-  * `$ terraform plan [-var 'region=${your_region}']`
-  * `$ terraform apply [-var 'region=${your_region}']`
+  * `$ export TF_VAR_region=${aws_region}` provide current region
+  * Change desired variables to your taste @ *terraform.tfvars*, [example](terraform/terraform.tfvars)
+  * Ensure your EC2 KeyPair is actually present at current region
+  * `$ terraform plan`
+  * `$ terraform apply`
 
 ## Provisioning App
 
 Ansible is serving as app deployer with mutable option for rolling update.
 
-Two main plays are:
+
+Main plays are:
 
  * "terraform_outputs" - this playbook is copying outputs and tfvars and formats them to serve as Ansible variables.
 
@@ -66,7 +70,7 @@ Due bug or specifics in terraform outputs runtime, you should run following play
 * `$ ansible-playbook terraform_outputs.yml`
 
 
-Then you can deploy the app:
+Then you can deploy the app (if 'deploy_version' variable is not provided, 'latest(v1)' app will be deployed):
 * `$ ansible-playbook manage_targets.yml --limit tag_Name_wordpress_dev [--skip-tags "roll_update"] [--extra-vars "deploy_version=[v1/latest|v2]"]`
 
 

@@ -2,7 +2,7 @@
 
 - name: "shell: login into ECR registry"
   shell: >
-    $(aws ecr get-login --no-include-email --region {{ region }})
+    $(aws ecr get-login --no-include-email --region {{ lookup('env', 'TF_VAR_region') }})
   tags:
     - prep
 

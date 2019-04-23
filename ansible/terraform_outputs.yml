@@ -3,10 +3,14 @@
 
   tasks:
 
-    - name: "shell: ensure efs mount-point(s) is(are) available"
+    - name: "set_fact: save 'ansible_vars_path'"
+      set_fact:
+        ansible_vars_path: "../ansible/group_vars"
+        terraform_vars_path: "../terraform"
+
+    - name: "shell: form outputs file and save tfvars for Ansible re-use"
       shell: |
-        ansible_vars_path="../ansible/group_vars"
-        terraform output | sed "s/[ ]*=[ ]*/: /g" > ${ansible_vars_path}/terraform_outputs.yaml
-        cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > ${ansible_vars_path}/terraform_tfvars.yaml
+        terraform output | sed "s/[ ]*=[ ]*/: /g" > "{{ ansible_vars_path }}/terraform_outputs.yaml"
+        cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > "{{ ansible_vars_path }}/terraform_tfvars.yaml"
       args:
-        chdir: "../terraform"
+        chdir: "{{ terraform_vars_path }}"

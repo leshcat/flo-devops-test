@@ -6,6 +6,11 @@
     - group_vars/terraform_outputs.yaml
     - group_vars/terraform_tfvars.yaml
 
+
+  pre_tasks:
+    - name: "debug: app version info"
+      debug: 'msg="Deploying app version -> {{ deploy_version }}"'
+
   tasks:
     - include_role:
         name: prep_app

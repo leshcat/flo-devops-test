@@ -1,5 +1,5 @@
-# Aws initials
-region = "us-east-1"
+# Aws initials are taken from
+# TF_VARs, i.e.: TF_VAR_region=us-east-1
 
 # Default prefix/postfix for resources that will form "environment"
 name = "wordpress"

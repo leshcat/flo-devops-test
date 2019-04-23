@@ -67,7 +67,7 @@
 
   - name: "shell: run docker-compose up"
     shell: |
-      $(aws ecr get-login --no-include-email --region {{ region }})
+      $(aws ecr get-login --no-include-email --region {{ lookup('env', 'AWS_DEFAULT_REGION') }})
       /usr/local/bin/docker-compose --file {{ app_docker_compose }} up -d
     args:
       chdir: "{{ app_location }}"
