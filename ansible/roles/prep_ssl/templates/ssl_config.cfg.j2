@@ -5,6 +5,12 @@ prompt             = no
 
 [req_distinguished_name]
 commonName="{{ hosted_zone }}"
+countryName            = BY
+stateOrProvinceName    = BY
+localityName           = Minsk
+organizationName       = leshcatlabs
+organizationalUnitName = devops
+emailAddress           = root@localhost
 
 [req_ext]
 subjectAltName   = @alt_names
