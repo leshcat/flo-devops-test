@@ -1,0 +1,20 @@
+---
+
+- name: "template: template the dotenv file for docker-compose"
+  template:
+    src: "ssl_config.cfg.j2"
+    dest: "ssl_config.cfg"
+    force: true
+
+- name: "shell: generate self-signed SSL"
+  shell: |
+     openssl req -x509 -config ssl_config.cfg \
+                       -extensions req_ext \
+                       -nodes \
+                       -days 3650 \
+                       -newkey rsa:2048 \
+                       -sha256 \
+                       -keyout {{ hosted_zone }}_wildcard.key \
+                       -out {{ hosted_zone}}_wildcard.crt
+  tags:
+    - prep_ssl

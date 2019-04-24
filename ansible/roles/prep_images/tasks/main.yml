@@ -4,7 +4,7 @@
   shell: >
     $(aws ecr get-login --no-include-email --region {{ lookup('env', 'TF_VAR_region') }})
   tags:
-    - prep
+    - prep_images
 
 - name: "shell: tag and push images to ECR repositories"
   shell: >
@@ -13,11 +13,11 @@
   with_together:
     - "{{ ecr_repositories|dict2items | product(app_versions)|list }}"
   tags:
-    - prep
+    - prep_images
 
 # - name: "debug: tag and push images to ECR repositories"
 #   debug: msg="{{ item.0.key }} {{ item.0.value }}:{{ item.1 }}"
 #   with_together:
 #     - "{{ ecr_repositories|dict2items | product(app_versions)|list }}"
 #   tags:
-#     - prep
+#     - prep_images

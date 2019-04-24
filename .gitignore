@@ -5,3 +5,6 @@ nodes/data/
 .DS_Store
 terraform_outputs.yaml
 terraform_tfvars.yaml
+ssl*.cfg
+*.crt
+*.key

@@ -1,0 +1,14 @@
+[ req ]
+req_extensions     = req_ext
+distinguished_name = req_distinguished_name
+prompt             = no
+
+[req_distinguished_name]
+commonName="{{ hosted_zone }}"
+
+[req_ext]
+subjectAltName   = @alt_names
+
+[alt_names]
+DNS.1  = "{{ hosted_zone }}"
+DNS.2  = "*.{{ hosted_zone }}"
