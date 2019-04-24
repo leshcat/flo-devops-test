@@ -10,7 +10,7 @@
 
     - name: "shell: form outputs file and save tfvars for Ansible re-use"
       shell: |
-        terraform output | sed "s/[ ]*=[ ]*/: /g" > "{{ ansible_vars_path }}/terraform_outputs.yaml"
+        terraform output -state "{{ tfstate | default('terraform.tfstate') }}" | sed "s/[ ]*=[ ]*/: /g" > "{{ ansible_vars_path }}/terraform_outputs.yaml"
         cat terraform.tfvars | sed "s/[ ]*=[ ]*/: /g" > "{{ ansible_vars_path }}/terraform_tfvars.yaml"
       args:
         chdir: "{{ terraform_vars_path }}"

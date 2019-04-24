@@ -50,7 +50,7 @@ Main plays are:
 
  * "terraform_outputs" - this playbook is copying outputs and tfvars and formats them to serve as Ansible variables.
 
- * "prepare_images" - this playbook will tag and push app images to private ECR repositories. Executed automatically once terraform provisions the environment.
+ * "prepare_images" - this playbook will tag and push app images to private ECR repositories.
 
  * "manage_targets" - deploys the app via docker-compose. By default play deploys using rolling update, thus ensuring Zero Downtime Deployment practice, however, you can skip this behavior via tags (see below). This play relies on Ansible's Dynamic inventory, utilizing tags to search for the required instances. Therefore, you should pass a `--limit tag_Name_${name}_${deployment}` flag. You can find this data via TF's `tag_di_name` output.
 
@@ -66,12 +66,14 @@ Main plays are:
 
 2. Execute as follows:
 
-Due bug or specifics in terraform outputs runtime, you should run following playbook again to get whole outputs in file:
-* `$ ansible-playbook terraform_outputs.yml`
+Copy and convert TF outputs and vars for Ansible use:
+* `$ ansible-playbook terraform_outputs.yml [-e state=${desired_state_file}]`
 
+Push pre-cooked images to ECR:
+* `$ ansible-playbook prep_images.yml`
 
-Then you can deploy the app (if 'deploy_version' variable is not provided, 'latest(v1)' app will be deployed):
-* `$ ansible-playbook manage_targets.yml --limit tag_Name_wordpress_dev [--skip-tags "roll_update"] [--extra-vars "deploy_version=[v1/latest|v2]"]`
+Now you can deploy the app (if 'deploy_version' variable is not provided, 'v1' app will be deployed):
+* `$ ansible-playbook manage_targets.yml --limit tag_Name_wordpress_dev [--skip-tags "roll_update"] [--extra-vars "deploy_version=[v1|v2/latest]"]`
 
 
 ## ADR

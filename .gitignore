@@ -1,6 +1,5 @@
 .terraform/
-terraform.tfstate*
-.terraform.tfstate*
+*.tfstate*
 nodes/data/
 .DS_Store
 terraform_outputs.yaml
