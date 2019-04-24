@@ -7,7 +7,7 @@ app_docker_compose: "docker-compose.yml"
 app_schema: "http"
 app_frontend_port: "80"
 
-deploy_version: "latest"
+deploy_version: "v1"
 
 app_versions: [
   v1,
