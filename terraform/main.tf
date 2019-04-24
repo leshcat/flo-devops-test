@@ -48,6 +48,12 @@ module "ecr" {
   environment = "${var.name}-${var.deployment}"
 }
 
+module "acm" {
+  source      = "./modules/acm"
+  environment = "${var.name}-${var.deployment}"
+  hosted_zone = "${var.hosted_zone}"
+}
+
 module "app" {
   source              = "./modules/app"
   region              = "${var.region}"
@@ -56,45 +62,9 @@ module "app" {
   vpc_id              = "${module.vpc.vpc_id}"
   vpc_sg_id           = "${module.vpc.vpc_sg_id}"
   efs_id              = "${module.efs.efs_id}"
+  acm_alb_ssl_arn     = "${module.acm.acm_alb_ssl_arn}"
   efs_mount_dns_names = "${module.efs.efs_mount_dns_names}"
   ec2_instance_type   = "${var.ec2_instance_type}"
   ec2_key_name        = "${var.ec2_key_name}"
 
-}
-
-resource "null_resource" "variables_and_outputs" {
-  triggers {
-    always_trigger = "${timestamp()}"
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      ansible-playbook terraform_outputs.yml
-    EOT
-
-    working_dir = "${path.module}/../ansible"
-  }
-
-  depends_on = [
-    "module.rds",
-    "module.app"
-  ]
-}
-
-resource "null_resource" "prepare_images" {
-  triggers {
-    always_trigger = "${timestamp()}"
-  }
-
-  provisioner "local-exec" {
-    command = <<-EOT
-      ansible-playbook prepare_images.yml
-    EOT
-
-    working_dir = "${path.module}/../ansible"
-  }
-
-  depends_on = [
-    "null_resource.variables_and_outputs"
-  ]
 }

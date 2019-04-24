@@ -85,3 +85,7 @@ output "iam_asg_role_unique_id" {
 output "tag_di_name" {
   value = "tag_Name_${var.name}_${var.deployment}"
 }
+
+output "acm_alb_ssl_arn" {
+  value = "${module.acm.acm_alb_ssl_arn}"
+}

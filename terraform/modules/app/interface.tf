@@ -34,3 +34,7 @@ variable "ec2_instance_type" {
 variable "ec2_key_name" {
   description = "EC2 instance type"
 }
+
+variable "acm_alb_ssl_arn" {
+  description = "Self-signed acm ssl arn"
+}

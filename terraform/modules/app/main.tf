@@ -121,10 +121,28 @@ resource "aws_lb_target_group" "albtg" {
   vpc_id   = "${var.vpc_id}"
 }
 
-resource "aws_lb_listener" "alblistener" {
+resource "aws_lb_listener" "alblistener_http" {
   load_balancer_arn = "${aws_alb.alb.arn}"
   port              = "80"
   protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
+  }
+}
+
+resource "aws_lb_listener" "alblistener_https" {
+  load_balancer_arn = "${aws_alb.alb.arn}"
+  port              = "443"
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  certificate_arn   = "${var.acm_alb_ssl_arn}"
 
   default_action {
     type             = "forward"
@@ -143,7 +161,7 @@ resource "aws_iam_instance_profile" "iam_instance_profile" {
 }
 
 resource "aws_iam_role" "iam_asg_role" {
-  name = "${var.environment}"
+  name = "${var.environment}-${var.region}"
   path = "/"
 
   assume_role_policy = <<POLICY
